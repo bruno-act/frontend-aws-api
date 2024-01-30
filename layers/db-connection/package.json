@@ -1,0 +1,16 @@
+{
+  "name": "get_benefits",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "lambda-build upload get_benefits -r af-south-1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "knex": "^0.21.16",
+    "mysql2": "^2.3.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
