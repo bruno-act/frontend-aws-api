@@ -148,20 +148,20 @@ variable "domain" {
 variable "api_endpoints" {
   type = any
   default = {
-    "/auth/request_token" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/applications" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/applications/attachments" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/applications/questions" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/person" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/search/id_number" = { post = "afc-phi-dev-infra-app-api" }
-    "/backend/search/last_name" = { post = "afc-phi-dev-infra-app-api" }
+    "/auth/request_token" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/applications" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/applications/attachments" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/applications/questions" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/person" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/search/id_number" = { post = "act-phi-dev-infra-app-api" }
+    "/backend/search/last_name" = { post = "act-phi-dev-infra-app-api" }
   }
 }
 
 variable "lambda_functions"{
   type = any
   default = {
-    afc-phi-dev-infra-app-api = {
+    act-phi-dev-infra-app-api = {
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
