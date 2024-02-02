@@ -41,8 +41,8 @@ resource "aws_lambda_permission" "app_apigw_lambda" {
 }
 
 resource "aws_lambda_function" "api" {
-  function_name = "${local.naming_prefix}-app-api"
   for_each      = var.lambda_functions
+  function_name = each.key
 
   filename = "hello_world.zip"
 
