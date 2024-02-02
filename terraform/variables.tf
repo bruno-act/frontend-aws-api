@@ -141,27 +141,51 @@ variable "tags" {
 variable "domain" {
   type        = string
   description = "Domain used for the application"
-  default = "afrocentrictech.org"
+  default = "dev.phi.afrocentrictech.org"
 }
 
 # https://github.com/QloudX/terraform-AWS-Lambda-REST-API/blob/main/rest-api.tf
 variable "api_endpoints" {
   type = any
   default = {
-    "/auth/request_token" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/applications" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/applications/attachments" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/applications/questions" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/person" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/search/id_number" = { post = "act-phi-dev-infra-app-api" }
-    "/backend/search/last_name" = { post = "act-phi-dev-infra-app-api" }
+    "/auth/request_token" = { post = "act-phi-dev-infra-app-request-token" }
+    "/backend/applications" = { post = "act-phi-dev-infra-app-applications" }
+    "/backend/applications/attachments" = { post = "act-phi-dev-infra-app-applications-attachments" }
+    "/backend/applications/questions" = { post = "act-phi-dev-infra-app-applications-questions" }
+    "/backend/person" = { post = "act-phi-dev-infra-app-person" }
+    "/backend/search/id_number" = { post = "act-phi-dev-infra-app-search-id_number" }
+    "/backend/search/last_name" = { post = "act-phi-dev-infra-app-search-last_name" }
   }
 }
 
 variable "lambda_functions"{
   type = any
   default = {
-    act-phi-dev-infra-app-api = {
+    act-phi-dev-infra-app-request-token = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-applications = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-api-applications-attachments = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-api-applications-questions = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-person = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-search-id_number = {
+        runtime = "nodejs20.x"
+        handler = "index.handler"
+    }
+    act-phi-dev-infra-app-api-search-last_name = {
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
