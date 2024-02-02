@@ -73,6 +73,8 @@ resource "aws_instance" "bastion_host" {
   subnet_id                   = aws_subnet.public_web_subnet_cidrs[0].id
   associate_public_ip_address = true
 
+  key_name = var.bastion_key_pair
+
   vpc_security_group_ids = [aws_security_group.bastion_host.id]
 
   iam_instance_profile = aws_iam_instance_profile.bastion_profile.name
@@ -80,10 +82,4 @@ resource "aws_instance" "bastion_host" {
   tags = {
     Name = "${local.naming_prefix}-bastion-host"
   }
-
-  user_data = <<EOF
-#!/bin/bash
-yum update -y -q
-yum install ec2-instance-connect
-EOF
 }

@@ -228,6 +228,13 @@ variable "bastion_ami_id" {
   description = "The AMI ID to be used for the Bastion Host"
 }
 
+variable "bastion_key_pair" {
+  type = string
+  description = "The key pair to be used for the Bastion Host"
+  default = "phi-api-key-pair"
+  
+}
+
 # #  _   _______  _____   _   _  ___  ______  _____ 
 # # | | | | ___ \/  __ \ | | | |/ _ \ | ___ \/  ___|
 # # | | | | |_/ /| /  \/ | | | / /_\ \| |_/ /\ `--. 
