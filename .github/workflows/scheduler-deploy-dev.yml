@@ -9,8 +9,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-  AWS_DEFAULT_REGION: eu-west-1
-  API_FUNCTION_NAME: cat-ac-dev-infra-app-api
+  AWS_DEFAULT_REGION: af-south-1
   LAMBDA_LAYER_TF_OUTPUT: "/cat-ac-dev-infra/tf-output/LambdaLayerArns"
 
 jobs:
@@ -18,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: api
+        working-directory: api/lambda
 
     steps:
       - name: 📥 Checkout code
@@ -29,8 +28,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies for /auth/request_token
         run: |
+          cd request_token
           npm ci
           mkdir -p package
           cp -r node_modules/* package/
@@ -52,8 +52,334 @@ jobs:
 
           printenv | grep AWS
 
-      - name: 🚀 Deploy code and layer to Lambda [cat-ac-dev-infra-app-api]
+      - name: 🚀 Deploy code and layer to Lambda [/auth/request_token]
         run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-request-token"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/applications
+        run: |
+          cd backend_applications
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/applications]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-applications"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/applications/attachments
+        run: |
+          cd backend_applications_attachments
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/applications/attachments]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-applications-attachments"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/applications/questions
+        run: |
+          cd backend_applications_questions
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/applications/questions]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-applications-questions"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/person
+        run: |
+          cd backend_person
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/person]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-person"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/search/id_number
+        run: |
+          cd backend_search_id_number
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/search/id_number]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-search-id_number"
+
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+
+      - name: Install dependencies for /backend/search/last_name
+        run: |
+          cd backend_search_last_name
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [/backend/search/last_name]
+        run: |
+          API_FUNCTION_NAME="act-phi-dev-infra-app-search-last_name"
+
           echo "Get Account ID"
           ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 
