@@ -1,0 +1,80 @@
+name: Deploy to Lambda
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  AWS_DEFAULT_REGION: eu-west-1
+  API_FUNCTION_NAME: cat-ac-dev-infra-app-api
+  LAMBDA_LAYER_TF_OUTPUT: "/cat-ac-dev-infra/tf-output/LambdaLayerArns"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          mkdir -p package
+          cp -r node_modules/* package/
+
+          # Copy Lambda function code to the package directory
+          # Exclude the package directory to avoid recursive copying
+          shopt -s extglob
+          cp -r !(package) package/
+
+          # Remove the node_modules folder from the package
+          rm -rf package/node_modules
+
+          # Package everything into a zip file
+          cd package
+          zip -r ../lambda.zip .
+
+          # Move back to src directory (optional)
+          cd ..
+
+          printenv | grep AWS
+
+      - name: 🚀 Deploy code and layer to Lambda [cat-ac-dev-infra-app-api]
+        run: |
+          echo "Get Account ID"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+          echo "Get Lambda layer list"
+          LAMBDA_LAYER_LIST=$(aws ssm get-parameter --name=$LAMBDA_LAYER_TF_OUTPUT --output text --query Parameter.Value)
+
+          # Remove the double quotes from the string
+          LAMBDA_LAYER_LIST=$(echo $LAMBDA_LAYER_LIST | tr -d '"')
+
+          echo "Lambda layers to deploy: $LAMBDA_LAYER_LIST"
+
+          echo "Deploying codebase to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-code \
+            --function-name $API_FUNCTION_NAME \
+            --zip-file fileb://lambda.zip
+          echo "Codebase deployed successfuly to Lambda: $API_FUNCTION_NAME"
+
+          echo "----------------------------------------"
+
+          echo "Deploying layer(s) to Lambda: $API_FUNCTION_NAME"
+          aws lambda update-function-configuration \
+            --function-name $API_FUNCTION_NAME \
+            --layers $LAMBDA_LAYER_LIST
+          echo "Layer(s) deployed successfuly to Lambda: $API_FUNCTION_NAME"
