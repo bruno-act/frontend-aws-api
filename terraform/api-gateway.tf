@@ -26,22 +26,6 @@ resource "aws_api_gateway_rest_api" "rest_api" {
   })
 }
 
-resource "aws_acm_certificate" "api" {
-  domain_name       = local.api_domain
-  validation_method = "DNS"
-
-  provider = aws.acm
-
-}
-
-resource "aws_acm_certificate_validation" "api" {
-  certificate_arn         = aws_acm_certificate.api.arn
-  validation_record_fqdns = [for record in aws_route53_record.api : record.fqdn]
-
-  provider = aws.acm
-
-}
-
 resource "aws_acm_certificate" "api_app_region" {
   domain_name       = local.api_domain
   validation_method = "DNS"
@@ -53,7 +37,7 @@ resource "aws_acm_certificate_validation" "api_app_region" {
 }
 
 resource "aws_api_gateway_domain_name" "proxy" {
-  depends_on = [aws_acm_certificate_validation.api]
+  depends_on = [aws_acm_certificate_validation.api_app_region]
 
   regional_certificate_arn = aws_acm_certificate_validation.api_app_region.certificate_arn
   domain_name     = local.api_domain
@@ -65,7 +49,7 @@ resource "aws_api_gateway_domain_name" "proxy" {
 
 resource "aws_route53_record" "api" {
   for_each = {
-    for dvo in aws_acm_certificate.api.domain_validation_options : dvo.domain_name => {
+    for dvo in aws_acm_certificate.api_app_region.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
