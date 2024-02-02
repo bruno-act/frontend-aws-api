@@ -2,6 +2,7 @@ resource "aws_db_instance" "app" {
   count                 = var.create_db_instance ? 1 : 0
   allocated_storage     = 20
   max_allocated_storage = 200
+  identifier            = "${local.naming_prefix}-app-db"
 
   engine                     = "mysql"
   engine_version             = "8.0.35"
@@ -23,10 +24,6 @@ resource "aws_db_instance" "app" {
   vpc_security_group_ids = [aws_security_group.app_database.id]
 
   deletion_protection = true
-
-  tags = {
-    Name = "${local.naming_prefix}-app-db"
-  }
 }
 
 locals {
