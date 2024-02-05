@@ -169,11 +169,11 @@ variable "lambda_functions"{
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
-    act-phi-dev-infra-app-api-applications-attachments = {
+    act-phi-dev-infra-app-applications-attachments = {
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
-    act-phi-dev-infra-app-api-applications-questions = {
+    act-phi-dev-infra-app-applications-questions = {
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
@@ -185,7 +185,7 @@ variable "lambda_functions"{
         runtime = "nodejs20.x"
         handler = "index.handler"
     }
-    act-phi-dev-infra-app-api-search-last_name = {
+    act-phi-dev-infra-app-search-last_name = {
         runtime = "nodejs20.x"
         handler = "index.handler"
     }

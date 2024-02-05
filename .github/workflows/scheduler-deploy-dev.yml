@@ -10,7 +10,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_DEFAULT_REGION: af-south-1
-  LAMBDA_LAYER_TF_OUTPUT: "/cat-ac-dev-infra/tf-output/LambdaLayerArns"
+  LAMBDA_LAYER_TF_OUTPUT: "/act-phi-dev-infra/tf-output/LambdaLayerArns"
 
 jobs:
   deploy:
@@ -47,13 +47,10 @@ jobs:
           cd package
           zip -r ../lambda.zip .
 
-          # Move back to src directory (optional)
-          cd ..
-
-          printenv | grep AWS
-
       - name: 🚀 Deploy code and layer to Lambda [/auth/request_token]
         run: |
+          cd request_token
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-request-token"
 
           echo "Get Account ID"
@@ -104,10 +101,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/applications]
         run: |
+          cd backend_applications
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-applications"
 
           echo "Get Account ID"
@@ -158,10 +156,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/applications/attachments]
         run: |
+          cd backend_applications_attachments
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-applications-attachments"
 
           echo "Get Account ID"
@@ -212,10 +211,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/applications/questions]
         run: |
+          cd backend_applications_questions
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-applications-questions"
 
           echo "Get Account ID"
@@ -266,10 +266,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/person]
         run: |
+          cd backend_person
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-person"
 
           echo "Get Account ID"
@@ -320,10 +321,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/search/id_number]
         run: |
+          cd backend_search_id_number
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-search-id_number"
 
           echo "Get Account ID"
@@ -374,10 +376,11 @@ jobs:
           # Move back to src directory (optional)
           cd ..
 
-          printenv | grep AWS
 
       - name: 🚀 Deploy code and layer to Lambda [/backend/search/last_name]
         run: |
+          cd backend_search_last_name
+
           API_FUNCTION_NAME="act-phi-dev-infra-app-search-last_name"
 
           echo "Get Account ID"
